@@ -1,6 +1,6 @@
 Description: Toolchain template which provides the resources needed to represent infrastructure as code.
   This template specifically creates a CI/CD pipeline using Jenkins to build a model using a SageMaker Pipeline and deploy the
-  resulting trained ML Model from Model Registry to two stages in CD -- staging and production.
+  resulting trained ML Model from Model Registry to perform batch tranform in a SageMaker Pipeline.
 
 Parameters:
   SageMakerProjectName:

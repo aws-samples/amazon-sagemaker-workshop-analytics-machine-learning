@@ -213,7 +213,7 @@ Resources:
             Value: !Join [ ':', [ 'arn', !Ref 'AWS::Partition', 'sagemaker', !Ref 'AWS::Region', !Ref 'AWS::AccountId', !Sub 'project/${SageMakerProjectName}']]
       Source:
         Type: S3
-        Location: sagemaker-servicecatalog-seedcode-mmelli/bootstrap/GitRepositorySeedCodeCheckinCodeBuildProject-v1.0.zip
+        Location: sagemaker-servicecatalog-seedcode-us-east-1/bootstrap/GitRepositorySeedCodeCheckinCodeBuildProject-v1.0.zip
         BuildSpec: buildspec-jenkins.yml
       TimeoutInMinutes: 14
 
@@ -319,7 +319,7 @@ Resources:
       ServiceToken: !GetAtt
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
-      SEEDCODE_BUCKET_NAME: sagemaker-servicecatalog-seedcode-mmelli
+      SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
       SEEDCODE_BUCKET_KEY: toolchain/model-preprocess-workflow-jenkins-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelPreprocessCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelPreprocessCodeRepositoryBranch}
@@ -334,7 +334,7 @@ Resources:
       ServiceToken: !GetAtt
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
-      SEEDCODE_BUCKET_NAME: sagemaker-servicecatalog-seedcode-mmelli
+      SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
       SEEDCODE_BUCKET_KEY: toolchain/model-building-workflow-jenkins-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelBuildCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelBuildCodeRepositoryBranch}
@@ -349,7 +349,7 @@ Resources:
       ServiceToken: !GetAtt
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
-      SEEDCODE_BUCKET_NAME: sagemaker-servicecatalog-seedcode-mmelli
+      SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
       SEEDCODE_BUCKET_KEY: toolchain/model-deployment-workflow-jenkins-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelDeployCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelDeployCodeRepositoryBranch}

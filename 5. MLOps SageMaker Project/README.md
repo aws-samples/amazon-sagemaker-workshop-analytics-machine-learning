@@ -149,6 +149,8 @@ If there is any issue or error occured during the project creation step, please 
 When the project is complete, you receive a successful message, and your project is now listed on the **Projects** list.
 ![](image/create-project-successful.png)
 
+You can clone the reposority by clicking on the link under **Local path** to make a copy of the code available in your studio local path.
+
 You now have seed code in your NYCTaxi-mlops-preprocess, NYCTaxi-mlops-build and NYCTaxi-mlops-pdeploy GitHub repositories. You also have the /jenkins folders containing the Jenkins DSL to create your Jenkins pipeline.
 
 ![](image/seeded-gitrepo.png)
@@ -156,7 +158,9 @@ You now have seed code in your NYCTaxi-mlops-preprocess, NYCTaxi-mlops-build and
 To learn more about the Jenkinsfile and seed_job.groovy, please refer to the [blog post](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/) in section **```Automatically generated Jenkins pipeline syntax```**.
 
 ## Create a Jenkins model build pipeline
+In this step, we create the Jenkins pipeline using the DSL generated in the seed code created through the SageMaker project in the previous step.
 
+Please refer to the section **```Create a Jenkins model build pipeline```** in the [blog post](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/) to get the step by step instructions of creating the Jenkins pipelins for data preprocessing, model building and batch transform.
 
 
 

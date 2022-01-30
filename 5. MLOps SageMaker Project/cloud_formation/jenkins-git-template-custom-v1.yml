@@ -91,6 +91,30 @@ Parameters:
     Default: 'true'
     AllowedValues: ["true", "false"]
     Description: Whether Seedcode needs to be populated for Model Deployment Code Repository
+    
+  ModelDeployEndpointCodeRepositoryUrl:
+    Type: String
+    Description: Git Repository Url for the Model Deployment Code Repository for Endpoint
+
+  ModelDeployEndpointCodeRepositoryBranch:
+    Type: String
+    Default: 'main'
+    Description: Branch name for the Model Deployment Code Repository for Endpoint
+
+  ModelDeployEndpointCodeRepositoryFullname:
+    Type: String
+    MaxLength: 1024
+    Description: Full repository name of the Model Deployment Code Repository for Endpoint, which would be username/reponame or organizationname/reponame
+
+  ModelDeployEndpointCodeRepositoryCodestarConnectionArn:
+    Type: String
+    Description: Codestar Connection Arn for the Model Deployment Code Repository for Endpoint
+
+  ModelDeployEndpointCodeRepositoryIsSeedcodeRequired:
+    Type: String
+    Default: 'true'
+    AllowedValues: ["true", "false"]
+    Description: Whether Seedcode needs to be populated for Model Deployment Code Repository for Endpoint
 
 Metadata:
   SagemakerTemplateParameterRules:
@@ -99,6 +123,8 @@ Metadata:
     ModelBuildCodeRepositoryBranch:
       Optional: true
     ModelDeployCodeRepositoryBranch:
+      Optional: true
+    ModelDeployEndpointCodeRepositoryBranch:
       Optional: true
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -129,6 +155,15 @@ Metadata:
           - ModelDeployCodeRepositoryFullname
           - ModelDeployCodeRepositoryCodestarConnectionArn
           - ModelDeployCodeRepositoryIsSeedcodeRequired
+      -
+        Label:
+          default: "ModelDeploy(Endpoint) CodeRepository Info"
+        Parameters:
+          - ModelDeployEndpointCodeRepositoryUrl
+          - ModelDeployEndpointCodeRepositoryBranch
+          - ModelDeployEndpointCodeRepositoryFullname
+          - ModelDeployEndpointCodeRepositoryCodestarConnectionArn
+          - ModelDeployEndpointCodeRepositoryIsSeedcodeRequired
 
     ParameterLabels:
       ModelPreprocessCodeRepositoryUrl:
@@ -161,6 +196,16 @@ Metadata:
         default: "Codestar Connection ARN"
       ModelDeployCodeRepositoryIsSeedcodeRequired:
         default: "Sample Code"
+      ModelDeployEndpointCodeRepositoryUrl:
+        default: "URL"
+      ModelDeployEndpointCodeRepositoryBranch:
+        default: "Branch"
+      ModelDeployEndpointCodeRepositoryFullname:
+        default: "Full Repository Name"
+      ModelDeployEndpointCodeRepositoryCodestarConnectionArn:
+        default: "Codestar Connection ARN"
+      ModelDeployEndpointCodeRepositoryIsSeedcodeRequired:
+        default: "Sample Code"
 
 Conditions:
   CreateResourceForModelPreprocessSeedcodeCheckin:
@@ -169,8 +214,11 @@ Conditions:
     !Equals [!Ref ModelBuildCodeRepositoryIsSeedcodeRequired, "true"]
   CreateResourceForModelDeploySeedcodeCheckin:
     !Equals [!Ref ModelDeployCodeRepositoryIsSeedcodeRequired, "true"]
+  CreateResourceForModelDeployEndpointSeedcodeCheckin:
+    !Equals [!Ref ModelDeployEndpointCodeRepositoryIsSeedcodeRequired, "true"]
   CreateResourceForAnySeedCodeCheckin:
-    !Or [ Condition: CreateResourceForModelPreprocessSeedcodeCheckin, Condition: CreateResourceForModelBuildSeedcodeCheckin, Condition: CreateResourceForModelDeploySeedcodeCheckin ]
+    !Or [ Condition: CreateResourceForModelPreprocessSeedcodeCheckin, Condition: CreateResourceForModelBuildSeedcodeCheckin, Condition: CreateResourceForModelDeploySeedcodeCheckin, Condition:
+CreateResourceForModelDeployEndpointSeedcodeCheckin]
 
 Resources:
   MlOpsArtifactsBucket:
@@ -320,7 +368,7 @@ Resources:
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
       SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
-      SEEDCODE_BUCKET_KEY: toolchain/model-preprocess-workflow-jenkins-v1.0.zip
+      SEEDCODE_BUCKET_KEY: toolchain/model-preprocess-workflow-seedcode-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelPreprocessCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelPreprocessCodeRepositoryBranch}
       GIT_REPOSITORY_CONNECTION_ARN: !Sub ${ModelPreprocessCodeRepositoryCodestarConnectionArn}
@@ -335,7 +383,7 @@ Resources:
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
       SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
-      SEEDCODE_BUCKET_KEY: toolchain/model-building-workflow-jenkins-v1.0.zip
+      SEEDCODE_BUCKET_KEY: toolchain/model-building-workflow-seedcode-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelBuildCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelBuildCodeRepositoryBranch}
       GIT_REPOSITORY_CONNECTION_ARN: !Sub ${ModelBuildCodeRepositoryCodestarConnectionArn}
@@ -350,10 +398,25 @@ Resources:
         - GitSeedCodeCheckinProjectTriggerLambda
         - Arn
       SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
-      SEEDCODE_BUCKET_KEY: toolchain/model-deployment-workflow-jenkins-v1.0.zip
+      SEEDCODE_BUCKET_KEY: toolchain/model-deployment-workflow-seedcode-v1.0.zip
       GIT_REPOSITORY_FULL_NAME: !Sub ${ModelDeployCodeRepositoryFullname}
       GIT_REPOSITORY_BRANCH: !Sub ${ModelDeployCodeRepositoryBranch}
       GIT_REPOSITORY_CONNECTION_ARN: !Sub ${ModelDeployCodeRepositoryCodestarConnectionArn}
+      SEED_CODE_UPDATE_FILE_NAME: 'jenkins/seed_job.groovy'
+  
+  SageMakerModelDeployEndpointSeedCodeCheckinProjectTriggerLambdaInvoker:
+    Type: 'AWS::CloudFormation::CustomResource'
+    Condition: CreateResourceForModelDeployEndpointSeedcodeCheckin
+    DependsOn: GitSeedCodeCheckinProjectTriggerLambda
+    Properties:
+      ServiceToken: !GetAtt
+        - GitSeedCodeCheckinProjectTriggerLambda
+        - Arn
+      SEEDCODE_BUCKET_NAME: !Join [ '-', [ 'sagemaker', 'servicecatalog', 'seedcode', !Ref 'AWS::AccountId', !Ref 'AWS::Region' ] ]
+      SEEDCODE_BUCKET_KEY: toolchain/model-deployment-endpoint-workflow-seedcode-v1.0.zip
+      GIT_REPOSITORY_FULL_NAME: !Sub ${ModelDeployEndpointCodeRepositoryFullname}
+      GIT_REPOSITORY_BRANCH: !Sub ${ModelDeployEndpointCodeRepositoryBranch}
+      GIT_REPOSITORY_CONNECTION_ARN: !Sub ${ModelDeployEndpointCodeRepositoryCodestarConnectionArn}
       SEED_CODE_UPDATE_FILE_NAME: 'jenkins/seed_job.groovy'
 
   ModelPreprocessSagemakerCodeRepository:
@@ -379,3 +442,11 @@ Resources:
       GitConfig:
         Branch: !Sub ${ModelDeployCodeRepositoryBranch}
         RepositoryUrl: !Sub ${ModelDeployCodeRepositoryUrl}
+  
+  ModelDeployEndpointSagemakerCodeRepository:
+    Type: 'AWS::SageMaker::CodeRepository'
+    Properties:
+      CodeRepositoryName: !Sub sagemaker-${SageMakerProjectId}-modeldeploy-endpoint # max: 10+15+12=37 out of 63 max
+      GitConfig:
+        Branch: !Sub ${ModelDeployEndpointCodeRepositoryBranch}
+        RepositoryUrl: !Sub ${ModelDeployEndpointCodeRepositoryUrl}

@@ -21,6 +21,8 @@ aws s3 cp cloud_formation/jenkins-git-template-custom-v1.yml s3://sagemaker-serv
 
 aws s3 cp GitRepositorySeedCodeCheckinCodeBuildProject-v1.0.zip s3://sagemaker-servicecatalog-seedcode-"$account_id"-"$region"/bootstrap/GitRepositorySeedCodeCheckinCodeBuildProject-v1.0.zip
 
-aws s3 cp model-preprocess-workflow-jenkins-v1.0.zip s3://sagemaker-servicecatalog-seedcode-"$account_id"-"$region"/toolchain/model-preprocess-workflow-jenkins-v1.0.zip
-aws s3 cp model-building-workflow-jenkins-v1.0.zip s3://sagemaker-servicecatalog-seedcode-"$account_id"-"$region"/toolchain/model-building-workflow-jenkins-v1.0.zip
-aws s3 cp model-deployment-workflow-jenkins-v1.0.zip s3://sagemaker-servicecatalog-seedcode-"$account_id"-"$region"/toolchain/model-deployment-workflow-jenkins-v1.0.zip  
+for i in $(ls -d *seedcode*); do
+    cd $i && zip -r ../$i.zip . && cd ..
+    aws s3 cp $i.zip s3://sagemaker-servicecatalog-seedcode-"$account_id"-"$region"/toolchain/$i.zip
+    rm $i.zip
+done

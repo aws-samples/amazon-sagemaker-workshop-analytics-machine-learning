@@ -20,7 +20,7 @@ The following are prerequisites to completing the steps in this post:
 - Three GitHub repositories initialized with a README. You must create these repositories as a prerequisite because you supply the three repositories as input when creating your SageMaker project. You can choose the repository names and below are just example repository names. The repositories are used for the preprocess, build, and deploy pipelines. The project templates automatically seed the code that is pushed to these repositories:
   - NYCTaxi-mlops-preprocess - Seeded with your model data preparation and SageMaker Pipeline code.
   - NYCTaxi-mlops-build – Seeded with your model build code, which includes the code needed for model training, model evaluation, and your SageMaker pipeline code.
-  - NYCTaxi-mlops-build – Seeded with your model deploy code, which includes the code needed to create the batch transform pipeline.
+  - NYCTaxi-mlops-deploy – Seeded with your model deploy code, which includes the code needed to create the batch transform pipeline.
   - An AWS account and access to services used in this example.
   
 We also assume some familiarity with Jenkins. For general information on Jenkins, we recommend reading the [Jenkins Handbook](https://www.jenkins.io/doc/book/).

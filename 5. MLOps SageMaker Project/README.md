@@ -10,7 +10,10 @@ In the following sections, we cover the one-time setup tasks and the steps requi
 
 The data preprocess and model build pipelines are triggered based on changes to the model build GitHub repository based on Jenkins polling the source repository every minute. The model deploy pipeline can be triggered based on changes to the model deploy code in GitHub or when a new model version is approved in the SageMaker Model Registry.
 
-
+The flowchart below shows how to build the achitecture step by step, we will elaborate on each step in the following sections.
+<div align="center">
+<img width=800 src="image/jenkis-github-sm-mlops.png"></img>
+</div>
 
 ## Prerequisites
 The following are prerequisites to completing the steps in this post:

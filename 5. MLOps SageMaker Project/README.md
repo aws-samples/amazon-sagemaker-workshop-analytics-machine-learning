@@ -1,8 +1,21 @@
-## Custom Project Template for SageMaker with GitHub and Jenkins
+# Custom Project Template for SageMaker with GitHub and Jenkins
 
 
 This repository contains an example custom SageMaker Project template with details on what the template achieves and how to set it up. You can follow the instructions below to manually set up and run the project. (Note that the instructions and steps are adopted and updated from the AWS blog posts [Create Amazon SageMaker projects using third-party source control and Jenkins](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/) and [Build Custom SageMaker Project Templates – Best Practices](https://aws.amazon.com/blogs/machine-learning/build-custom-sagemaker-project-templates-best-practices/), please refer to the original resources for more information).
 
+- [Purpose](#purpose)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [One-time setup tasks](#onetimesetuptasks)
+- [Adding the template to Amazon SageMaker Projects in Studio](#addtemplate2smproject)
+- [Use the Custom MLOps project template with GitHub and Jenkins to create a SageMaker project](#mlopsJenkinsGithub)
+- [Create a Jenkins model build pipeline](#createJenkinsPipeline)
+
+<a id="purpose"></a>
+## Purpose
+The purpose of this template is to demonstrate how to create custom project template to use github and Jenkins as the resources. You can always update and create your own custom project template based on your environment setup and workflow requirements. There are other AWS samples available to show you how to create custom template and some useful MLOps architectures, such as [Amazon SageMaker MLOps with Featurestore and DataWrangler Using CDK](https://github.com/aws-samples/amazon-sagemaker-mlops-with-featurestore-and-datawrangler) and [Amazon SageMaker Drift Detection](https://github.com/aws-samples/amazon-sagemaker-drift-detection). These examples uses CDK to generate the CFN templates. For instructions on how to install CDK, check the relevant [documentation](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_install). In this example, we will show you how to create the SageMaker custom project template step by step. You can also refer to the github sample: [Custom Project Templates in SageMaker](https://github.com/aws-samples/sagemaker-custom-project-templates) for more example Project teamplats.
+
+<a id="architecture"></a>
 ## Architecture
 In the following sections, we cover the one-time setup tasks and the steps required when building new pipelines using the custom SageMaker MLOps project templates to build out the following high-level architecture (click on image to expand).
 
@@ -15,6 +28,7 @@ The flowchart below shows how to build the achitecture step by step, we will ela
 <img width=800 src="image/jenkis-github-sm-mlops.png"></img>
 </div>
 
+<a id="prerequisites"></a>
 ## Prerequisites
 The following are prerequisites to completing the steps in this post:
 
@@ -37,6 +51,7 @@ The one-time setup tasks include:
 4. Create an [Amazon EventBridge rule](https://aws.amazon.com/eventbridge/) and [AWS Lambda function](http://aws.amazon.com/lambda) that is triggered to run the Jenkins model deploy pipeline when approved models are registered in the model registry.
 
 Please find detailed instructions below for each of the one-time setup steps:
+<a id="onetimesetuptasks"></a>
 ## One-time setup tasks
 The tasks in this section are required as part of the one-time setup activities that must be performed for each AWS Region (in this example we use us-east-1 region) where you use the new SageMaker MLOps project templates. The steps to create a GitHub connection and an [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) user for Jenkins could be incorporated into a CloudFormation template for repeatability. For this repo example, we explicitly define the steps.
 
@@ -80,10 +95,7 @@ This completes the one-time setup required to use the new MLOps SageMaker projec
 
 We now move on to the steps for creating SageMaker projects using the custom MLOps project template from SageMaker Studio.
 
-
-## Purpose
-The purpose of this template is to demonstrate how to create custom project template to use github and Jenkins as the resources. You can always update and create your own custom project template based on your environment setup and workflow requirements. There are other AWS samples available to show you how to create custom template and some useful MLOps architectures, such as [Amazon SageMaker MLOps with Featurestore and DataWrangler Using CDK](https://github.com/aws-samples/amazon-sagemaker-mlops-with-featurestore-and-datawrangler) and [Amazon SageMaker Drift Detection](https://github.com/aws-samples/amazon-sagemaker-drift-detection). These examples uses CDK to generate the CFN templates. For instructions on how to install CDK, check the relevant [documentation](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_install). In this example, we will show you how to create the SageMaker custom project template step by step. You can also refer to the github sample: [Custom Project Templates in SageMaker](https://github.com/aws-samples/sagemaker-custom-project-templates) for more example Project teamplats.
-
+<a id="addtemplate2smproject"></a>
 ## Adding the template to Amazon SageMaker Projects in Studio
 ### Step 1. Create Portfolio in [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)
 ![](image/create-portfolio.png)
@@ -118,7 +130,8 @@ Go to SageMaker Studio console, under Project, you can choose to create project 
 
 ![](image/studio-project-available.png)
 
-## Use the Custom MLOps project template with GitHub and Jenkins
+<a id="mlopsJenkinsGithub"></a>
+## Use the Custom MLOps project template with GitHub and Jenkins to create a SageMaker project
 In this section, we cover how to use this custom MLOps project templates that allow you to utilize Jenkins as your orchestrator. First, we create a new SageMaker project using the new template. Then we use the generated Jenkins pipeline code to create the Jenkins pipeline.
 
 ### Step 1. Select the template in the example above and provide a name.
@@ -160,6 +173,7 @@ You now have seed code in your NYCTaxi-mlops-preprocess, NYCTaxi-mlops-build and
 
 To learn more about the Jenkinsfile and seed_job.groovy, please refer to the [blog post](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/) in section **```Automatically generated Jenkins pipeline syntax```**.
 
+<a id="createJenkinsPipeline"></a>
 ## Create a Jenkins model build pipeline
 In this step, we create the Jenkins pipeline using the DSL generated in the seed code created through the SageMaker project in the previous step.
 

@@ -27,19 +27,9 @@ Parameters:
   EndpointInstanceType:
     Type: String
     Description: The ML compute instance type for the endpoint.
-  DataCaptureUploadPath:
+  DataOutputPath:
     Type: String
     Description: The s3 path to which the captured data is uploaded.
-  SamplingPercentage:
-    Type: Number
-    Description: The sampling percentage
-    MinValue: 0
-    MaxValue: 100
-  EnableDataCapture:
-    Description: Enable Data capture.
-    Default: true
-    Type: String
-    AllowedValues: [true, false]   
 
 
 Resources:
@@ -59,16 +49,14 @@ Resources:
           InstanceType: !Ref EndpointInstanceType
           ModelName: !GetAtt Model.ModelName
           VariantName: AllTraffic
-      DataCaptureConfig:
-          EnableCapture: !Ref EnableDataCapture 
-          InitialSamplingPercentage: !Ref SamplingPercentage
-          DestinationS3Uri: !Ref DataCaptureUploadPath
-          CaptureOptions:
-            - CaptureMode: Input
-            - CaptureMode: Output
+      AsyncInferenceConfig:
+          OutputConfig:
+              S3OutputPath: !Ref DataOutputPath
+          ClientConfig:
+              MaxConcurrentInvocationsPerInstance: 2
 
   Endpoint:
     Type: AWS::SageMaker::Endpoint
     Properties:
-      EndpointName: !Sub ${SageMakerProjectName}-${StageName}
+      EndpointName: !Sub ${SageMakerProjectName}-${StageName}-async
       EndpointConfigName: !GetAtt EndpointConfig.EndpointConfigName

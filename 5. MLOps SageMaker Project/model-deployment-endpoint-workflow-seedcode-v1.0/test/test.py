@@ -50,6 +50,7 @@ if __name__ == "__main__":
     parser.add_argument("--log-level", type=str, default=os.environ.get("LOGLEVEL", "INFO").upper())
     parser.add_argument("--import-build-config", type=str, required=True)
     parser.add_argument("--export-test-results", type=str, required=True)
+    parser.add_argument("--endpoint-type", type=str, required=True)
     args, _ = parser.parse_known_args()
 
     # Configure logging to output the line number and message
@@ -61,8 +62,8 @@ if __name__ == "__main__":
         config = json.load(f)
 
     # Get the endpoint name from sagemaker project name
-    endpoint_name = "{}-{}".format(
-        config["Parameters"]["SageMakerProjectName"], config["Parameters"]["StageName"]
+    endpoint_name = "{}-{}-{}".format(
+        config["Parameters"]["SageMakerProjectName"], config["Parameters"]["StageName"], args.endpoint_type
     )
     results = test_endpoint(endpoint_name)
 

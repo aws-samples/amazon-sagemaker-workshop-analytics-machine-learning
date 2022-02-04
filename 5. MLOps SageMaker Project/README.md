@@ -180,7 +180,20 @@ In this step, we create the Jenkins pipeline using the DSL generated in the seed
 Please refer to the section **```Create a Jenkins model build pipeline```** in the [blog post](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/) to get the step by step instructions of creating the Jenkins pipelins for data preprocessing, model building and batch transform.
 
 
+## FAQ
+- When referring to [Jenkins on AWS](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/) to set up jenkins server, `sudo yum update –y` failed as below in the section of `Download and install Jenkins`:
+```
+Failed to set locale, defaulting to C
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+No Match for argument: –y
+No packages marked for update
+```
 
+Run the following commands instead:
+```bash
+sudo amazon-linux-extras install epel -y
+sudo yum –y update
+```
 
 
 ## Security

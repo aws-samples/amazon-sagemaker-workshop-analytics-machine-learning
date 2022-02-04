@@ -59,7 +59,7 @@ def get_approved_package(model_package_group_name):
         raise Exception(error_message)
 
 
-def extend_config(args, model_package_arn, stage_config):
+def extend_config(args, model_package_arn, stage_config, endpoint_type):
     """
     Extend the stage configuration with additional parameters and tags based.
     """
@@ -69,12 +69,22 @@ def extend_config(args, model_package_arn, stage_config):
     if not "Tags" in stage_config:
         stage_config["Tags"] = {}
     # Create new params and tags
-    new_params = {
-        "SageMakerProjectName": args.sagemaker_project_name,
-        "ModelPackageName": model_package_arn,
-        "ModelExecutionRoleArn": args.model_execution_role,
-        "DataCaptureUploadPath": "s3://" + args.s3_bucket + '/datacapture-' + stage_config["Parameters"]["StageName"],
-    }
+    
+    if endpoint_type == "realtime":
+        new_params = {
+            "SageMakerProjectName": args.sagemaker_project_name,
+            "ModelPackageName": model_package_arn,
+            "ModelExecutionRoleArn": args.model_execution_role,
+            "DataCaptureUploadPath": "s3://" + args.s3_bucket + '/datacapture-' + stage_config["Parameters"]["StageName"],
+        }
+    else:
+        new_params = {
+            "SageMakerProjectName": args.sagemaker_project_name,
+            "ModelPackageName": model_package_arn,
+            "ModelExecutionRoleArn": args.model_execution_role,
+            "DataOutputPath": "s3://" + args.s3_bucket + '/AsyncOutput-' + stage_config["Parameters"]["StageName"],
+        }
+    
     new_tags = {
         "sagemaker:deployment-stage": stage_config["Parameters"]["StageName"],
         "sagemaker:project-id": args.sagemaker_project_id,
@@ -133,6 +143,7 @@ if __name__ == "__main__":
     parser.add_argument("--sagemaker-project-name", type=str, required=True)
     parser.add_argument("--sagemaker-project-arn", type=str, required=False)
     parser.add_argument("--s3-bucket", type=str, required=True)
+    parser.add_argument("--endpoint-type", type=str, required=True, default="realtime")
     parser.add_argument("--import-staging-config", type=str, default="staging-config.json")
     parser.add_argument("--import-prod-config", type=str, default="prod-config.json")
     parser.add_argument("--export-staging-config", type=str, default="staging-config-export.json")
@@ -150,10 +161,15 @@ if __name__ == "__main__":
 
     # Get the latest approved package
     model_package_arn = get_approved_package(args.model_package_group_name)
-
+    
+    staging_config_path = os.path.join(f"{args.endpoint_type}_config",
+                                       args.import_staging_config)
+    prod_config_path = os.path.join(f"{args.endpoint_type}_config",
+                                    args.import_prod_config)
+    
     # Write the staging config
-    with open(args.import_staging_config, "r") as f:
-        staging_config = extend_config(args, model_package_arn, json.load(f))
+    with open(staging_config_path, "r") as f:
+        staging_config = extend_config(args, model_package_arn, json.load(f), args.endpoint_type)
     logger.debug("Staging config: {}".format(json.dumps(staging_config, indent=4)))
     with open(args.export_staging_config, "w") as f:
         json.dump(staging_config, f, indent=4)
@@ -161,8 +177,8 @@ if __name__ == "__main__":
       create_cfn_params_tags_file(staging_config, args.export_staging_params, args.export_staging_tags)
 
     # Write the prod config for code pipeline
-    with open(args.import_prod_config, "r") as f:
-        prod_config = extend_config(args, model_package_arn, json.load(f))
+    with open(prod_config_path, "r") as f:
+        prod_config = extend_config(args, model_package_arn, json.load(f), args.endpoint_type)
     logger.debug("Prod config: {}".format(json.dumps(prod_config, indent=4)))
     with open(args.export_prod_config, "w") as f:
         json.dump(prod_config, f, indent=4)

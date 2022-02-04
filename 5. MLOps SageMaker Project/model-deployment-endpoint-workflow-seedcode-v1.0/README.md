@@ -10,6 +10,22 @@ You own this code and you can modify this template to change as you need it, add
 
 A description of some of the artifacts is provided below:
 
+## Setup
+This repository supports the deployment for both real-time endpoint and asynchronous endpoint. You can modify the environment varibale `ENDPOINT_TYPE` in `jenkins/Jenkinsfile` as `async` or `realtime` to deploy real-time endpoint or asynchronous endpoint.
+
+```bash
+pipeline {
+  agent any
+  environment {
+          EXPORT_TEMPLATE_NAME = 'template-export.yml'
+          EXPORT_TEMPLATE_STAGING_CONFIG = 'staging-config-export.json'
+          EXPORT_TEMPLATE_STAGING_PARAMS = 'staging-params-export.json'
+          EXPORT_TEMPLATE_STAGING_TAGS = 'staging-tags-export.json'
+          EXPORT_TEMPLATE_PROD_CONFIG = 'prod-config-export.json'
+          EXPORT_TEMPLATE_PROD_PARAMS = 'prod-params-export.json'
+          EXPORT_TEMPLATE_PROD_TAGS = 'prod-tags-export.json'
+          ENDPOINT_TYPE = 'async' # TODO: Change endpoint type
+```
 
 ## Layout of the SageMaker ModelBuild Project Template
 

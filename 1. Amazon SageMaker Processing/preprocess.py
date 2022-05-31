@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 import sys
+
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'sagemaker'])
 
 from zipfile import ZipFile
@@ -89,7 +90,10 @@ def load_data(file_list: list):
     # Concat input files with select columns
     dfs = []
     for file in file_list:
-        dfs.append(pd.read_csv(file, usecols=use_cols))
+        df = pd.read_parquet(file, engine='pyarrow', columns=use_cols)
+        df = df.fillna(0)
+        df['passenger_count'] = df['passenger_count'].astype('int64')
+        dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
 
 
@@ -226,16 +230,18 @@ def _read_json(path):  # type: (str) -> dict
 def main(base_dir: str, args: argparse.Namespace):
     # Input data files
     input_dir = os.path.join(base_dir, "input/data")
-    input_file_list = glob.glob(f"{input_dir}/*.csv")
+    input_file_list = glob.glob(f"{input_dir}/*.parquet")
     logger.info(f"Input file list: {input_file_list}")
+    
+    if len(input_file_list) == 0:
+        raise Exception(f"No input files found in {input_dir}")
+
 
     hosts = _read_json("/opt/ml/config/resourceconfig.json")
     logger.info(hosts)
     current_host = hosts["current_host"]
     logger.info(current_host)
         
-    if len(input_file_list) == 0:
-        raise Exception(f"No input files found in {input_dir}")
 
     # Input zones file
     zones_dir = os.path.join(base_dir, "input/zones")

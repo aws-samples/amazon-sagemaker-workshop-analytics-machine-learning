@@ -6,7 +6,7 @@ Amazon Analytics and Machine Learning labs help customers and partners to provid
 
 ## Overview of the Labs
 
-Find details on each lab here - [https://d3itfixuo3e404.cloudfront.net/ ](https://catalog.us-east-1.prod.workshops.aws/workshops/84a02db4-d662-44ec-b025-5a2bdfadb6f8/en-US)
+Find details on each lab here - [Lab Instructions ](https://catalog.us-east-1.prod.workshops.aws/workshops/84a02db4-d662-44ec-b025-5a2bdfadb6f8/en-US)
 
 ## Security
 
